@@ -1,0 +1,205 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Automation of Creating a Virtual Private Cloud and a VPC PEERING
+
+Parameters:
+  KeyName:
+    Description: The EC2 Key Pair to allow SSH access to the instance
+    Type: 'AWS::EC2::KeyPair::KeyName'
+
+# DO NOT FORGET TO CREATE A KEYPAIR AND THEN TO CHOOSE THE KEYPAIR WHEN UPLODING ON CLOUDFORMATION
+
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsHostnames: true
+      Tags:
+      - Key: name
+        Value: jesus-pena-vpc
+
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.0.0/24
+      AvailabilityZone: !Select
+        - '0'
+        - !GetAZs ''
+      Tags:
+        - Key: name
+          Value: public-subnet
+
+  PrivateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.2.0/23
+      AvailabilityZone: !Select
+        - '0'
+        - !GetAZs ''
+      Tags:
+        - Key: name
+          Value: private-subnet
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+      - Key: name
+        Value: jesus-pena-igw
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: name
+          Value: jesus-pena-public-rt
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnetRouteTableAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
+
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+      - Key: Name
+        Value: Private Route Table
+
+  PrivateSubnetRouteTableAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet
+      RouteTableId: !Ref PrivateRouteTable
+
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    DependsOn: 'VPC'
+    Properties:
+      GroupName: jesus-pena-app-sg
+      GroupDescription: Allow HTTP and SSH traffic
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+      -
+        CidrIp:  0.0.0.0/0
+        FromPort: 22
+        IpProtocol: 'tcp'
+        ToPort: 22
+
+      -
+        CidrIp:  0.0.0.0/0
+        FromPort: 80
+        IpProtocol: 'tcp'
+        ToPort: 80
+
+      -
+        CidrIp:  0.0.0.0/0
+        FromPort: 3306
+        IpProtocol: 'tcp'
+        ToPort: 3306
+
+  RootRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "ec2.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+  RolePolicies:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: "root"
+      PolicyDocument: {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": "ssm:*",
+            "Resource": "arn:aws:ssm:*:*:parameter/inventory-app/*",
+            "Effect": "Allow"
+        }
+    ]
+}
+      Roles:
+        - Ref: "RootRole"
+  RootInstanceProfile:
+    Type: "AWS::IAM::InstanceProfile"
+    Properties:
+      Path: "/"
+      Roles:
+        - Ref: "RootRole"
+
+  AppServerInstance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      SecurityGroupIds:
+        [!Ref WebServerSecurityGroup]
+      KeyName: web
+      SubnetId:
+        !Ref "PublicSubnet"
+      IamInstanceProfile:
+        !Ref RootInstanceProfile
+      ImageId: ami-02baf2b4223a343e8
+      InstanceType: t3.micro
+      UserData:
+        Fn::Base64: !Sub |
+         #!/bin/bash -xe
+         #Install Apache Web Server and PHP
+           yum update -y
+           yum install -y httpd mysql
+           amazon-linux-extras install -y php7.2
+         # Download Lab files
+           wget https://us-west-2-tcprod.s3.amazonaws.com/courses/ILT-TF-200-ARCHIT/v6.8.12/lab-2-webapp/scripts/inventory-app.zip
+           unzip inventory-app.zip -d /var/www/html/
+         # Download and install the AWS SDK for PHP
+           wget https://github.com/aws/aws-sdk-php/releases/download/3.62.3/aws.zip
+           unzip aws -d /var/www/html
+         # Turn on web server
+           chkconfig httpd on
+           service httpd start
+  MyEIP:
+    Type: 'AWS::EC2::EIP'
+    Properties:
+      InstanceId: !Ref AppServerInstance
+
+Outputs:
+  VPC:
+    Description: VPC
+    Value: !Ref VPC
+  AZ1:
+    Description: Availability Zone 1
+    Value: !GetAtt
+      - PublicSubnet
+      - AvailabilityZone
+  AZ2:
+    Description: Availability Zone 2
+    Value: !GetAtt
+      - PublicSubnet
+      - AvailabilityZone
+  ElasticIp:
+    Description: Elastic Ip
+    Value: !Ref MyEIP
