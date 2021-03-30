@@ -1,9 +1,6 @@
 # aws-architecting-labs-3
 Automation of Creating a VPC on AWS
 
-
-Automation of Creating a VPC on AWS
-
 <div class="Box-body px-5 pb-5">
 
 
