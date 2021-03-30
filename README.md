@@ -73,11 +73,11 @@ Automation of Creating a VPC on AWS
 
 <p>Note this range is also within the VPC range and it is twice as large as the public range. This is typical as most of your resources shoudl be in private subnets and so they need larger IP spaces to be able to assign IP addresses to larger numbers of resources.</p>
 
+<p>Your VPC now has two subnets. However is totally isolated  and cannot comunicate with resources outside the VPC. You will next configure the public subnet to connect to the internet via an internet gateway.</p>
+
 <h2><a id="user-content-task-3-create-an-internet-gateway" class="anchor" aria-hidden="true" href="#task-3-create-an-internet-gateway"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Task 3: Create an internet gateway</h2>
 
-<p>Now you will add an internet gateway to add internet connectivity to VPC and then you'll set up that internet gateway to provide the connectivity to the public subnet your created. An internet gateway is a horizontally scaled redundant high capacity service. It
-
-does not place any availability risk (due to failure) or bandwith limits on traffic between the internet and your VPC.</p>
+<p>Now you will add an internet gateway to add internet connectivity to VPC and then you'll set up that internet gateway to provide the connectivity to the public subnet your created. An internet gateway is a horizontally scaled redundant high capacity service. It does not place any availability risk (due to failure) or bandwith limits on traffic between the internet and your VPC.</p>
 
 <p>The internet gateway provides a target for your route tables to connect to the internet and also provides the NAT (network address translation) for instances with public IP addresses.</p>
 
@@ -187,7 +187,7 @@ does not place any availability risk (due to failure) or bandwith limits on traf
 
 </ol>
 
-<h2><a id="user-content-task-7-create-an-app-server" class="anchor" aria-hidden="true" href="#task-7-create-an-app-server"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Task 6: Create an App Server</h2>
+<h2><a id="user-content-task-7-create-an-app-server" class="anchor" aria-hidden="true" href="#task-7-create-an-app-server"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Task 6: Launching an App Server in the public subnet</h2>
 
 <p>In this task you will create a IAM role and then use that IAM role as the Instance profile when creating an EC2 instance that will be the App Server</p>
 
@@ -301,57 +301,173 @@ service httpd start</pre></div>
 
 </ol>
 
-<h2><a id="user-content-task-8-test-the-application" class="anchor" aria-hidden="true" href="#task-8-test-the-application"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>CHALLENGE: CONFIGURE VPC PERRTING</h2>
+<p>If your VPC was configured correctly, you should see the inventory application and the message "Please configure Settings to connect to database. No database settings have been configured yet, but the apparence of the inventory application proves that the public subnet has been correctly configured.</p>
 
-<p>In this task you will verify that the web application is working correctly</p>
+<h2><a id="user-content-task-8-test-the-application" class="anchor" aria-hidden="true" href="#task-8-test-the-application"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>CHALLENGE: CONFIGURE VPC PEERING</h2>
+
+<h3>Create a peering connection</h3>
 
 <ol>
 
 <li>
 
-<p>In the Instances page click on the checkbox to the left of your app server instance (firstname-lastname-app-server), scroll down to the bottom panel and copy the <strong>IPv4 Public IP</strong> and open a new browser tab with URL set to that IP address</p>
+<p>In the AWS Management Consolo, on the <strong>Services</strong> menu, click <strong>VPC</strong></p>
 
 </li>
 
 <li>
 
-<p>You should see a web-app open in the browser tab and you should see a <strong>Settings</strong> button, click on it</p>
+<p>In the left navigation pane, click <strong>peering connections</strong></p>
+<p>First create a peering connection, which is the VPC component that links two VPC together</p>
 
 </li>
 
 <li>
 
-<p>In the form, put <strong>inventory</strong> for the <strong>Database</strong>, <strong>master</strong> for the <strong>Username</strong>, and <strong>lab-password</strong> for the <strong>Password</strong></p>
+<p>Click <strong>Create Peering Connection and configure</strong></p>
+<ul>
+	<li><strong>Peering connection name tag:</strong>Lab-peer</li>
+  	<li><strong>VPC (Requester): firstname-lastname-vpc</strong></li>
+  	<li><strong>VPC (Accepter): Shared VPC</strong></li>
+</ul>
 
 </li>
 
 <li>
 
-<p>In the browser tab with your AWS management console, click on <strong>Services-&gt;RDS</strong> and then <strong>Databases</strong> in the left-hand menu</p>
+<p>Click <strong>Create Perring Connection</strong> and the click <strong>OK</strong></p>
+
+</li>
+
+<p>When a peering connection is created, the target VPC must accept it. This is because the target VPC migth be owned by a different account, or the user creating the peering connection might not have permission to accept the connection for the target VPC.</p>
+
+<li>
+
+<p>Select <strong>Lab-Peer</strong></p>
 
 </li>
 
 <li>
 
-<p>Click on the the database you had created (firstname-lastname-inventory-db), you should click on the name itself, not the radio button to the left.</p>
+<p>Click <strong>actions</strong> and select Accept Request</p>
 
 </li>
 
 <li>
 
-<p>Look for the <strong>Endpoint</strong> in the <strong>Connectivity &amp; security</strong> section and copy it</p>
+<p>Click <strong>Yes, Accept</strong> and <strong>Close</strong></p>
+
+</li>
+
+<h3>Configure route tables</h3>
+
+<p>Now, update the route tables in both VPCs to send traffic from the firstname-lastname-vpc to the peering connection.</p>
+
+<li>
+
+<p>In the left navigation pane, Click <strong>Route Tables</strong></p>
 
 </li>
 
 <li>
 
-<p>Return to the browser tab open to your web application and paste the endpoint into the <strong>Endpoint</strong> field and click <strong>Save</strong>.</p>
+<p>Select <strong>Public Route Tables</strong></p>
 
 </li>
+
+<p>You will configure the public route table that is associated with the firstname-lastname-vpc to send traffic to the peering connection if the destination IP address falls within the range of the Shared VPC</p>
+
+<li>
+
+<p>On the <strong>Routes</strong> tab, click <strong>Edit Routes</strong></p>
+
+</li>
+
+<li>
+
+<p>Click <strong>Add Route</strong> and configure:</p>
+
+<ul>
+
+<li><strong>Destination: 10.5.0.0/16 (This is the CIDR range of the Shared VPC)</strong></li>
+<li><strong>Target: Select Peering connection and then Lap-Peer</strong></li>
+
+</ul>
+
+</li>
+
+<li>
+
+<p>Click <strong>Save routes</strong> and the click <strong>Close</strong></p>
+
+</li>
+
+<p>Now, configure the reverse flow for traffic coming from Shared VPC and going to the firstname-lastname-vpc</p>
+
+<li>
+
+<p>Select <strong>Shared-VPC Route Table,</strong> ensuring that is the only route selected</p>
+
+</li>
+
+<p>This is the route table for the Shared-VPC. You will configure it to send traffic to the peering connection if the destination IP address falls within the range of the firstname-lastname-vpc</p>
+
+<li>
+
+<p>On the <strong>Routes</strong>  tab, click <strong>Edit Routes</strong></p>
+
+</li>
+
+<li>
+
+<p>Click <strong>Add Routes</strong> and configure:</p>
+
+<ul>
+<li><strong>Destination: 10.0.0.0/16</strong>(This is the CIDR range of the firstname-lastname-vpc</li>
+<li><strong>Target: Select Peering Connection and then <strong>Lab-Peer</strong></strong></li>
+<li>Click <strong>Save Routes</strong> and the click <strong>Close</strong></li>
+</ul>
+
+</li>
+
+<p>The route tables have now been configured to send traffic via the peering connection when the traffic is destined for the other VPC</p>
+
+<h3>Test the perring connection</h3>
+
+<p>A database has to be configured in the Shared VPC, refer to my aws-architecting-labs-2 for more information on how to configure a database</p>
+
+<li>
+
+<p>Return to the web browser tab with the inventory application, after you have configured the database</p>
+
+</li>
+
+<li>
+
+<p>Click <strong>Settings</strong> and configure:</p>
+
+<ul>
+
+<li><strong>Endpoint:</strong> Paste the <strong>Endpoint</strong> value shown in the database configuaration</li>
+<li><strong>Database:</strong>  inventory</li>
+<li><strong>Username:</strong> dbadmin</li>
+<li><strong>Password:</strong> lab-password</li>
+
+</ul>
+
+</li>
+
+<li>
+
+<p>Click <strong>Save</strong></p>
+
+</li>
+
+<p>The application should now show data from the database</p>
+
+<p>This proves that the peering connection is working because the shared VPC does not have an internet gateway. The only way to access the database is via the perring connection</p>
 
 </ol>
-
-<p>You should now see a list of pre-created data, you can go ahead and delete that and create new entries (these will be created in the database from the app server web application).</p>
 
 </article>
 
